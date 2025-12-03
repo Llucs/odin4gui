@@ -12,6 +12,13 @@ The executable provided in this repository is the result of combining Python cod
 It's quite simple to use, it's just like the original Odin for Windows; you can place the AP, BL, CSC, etc. files in the corresponding fields and start the flashing process normally.
 
 
+## How to do it?
+
+First, go to the Releases tab and download the latest executable "odin4gui" and run it directly by right-clicking and choosing run, It might be necessary to grant execution permission first.
+
+Another way to run it is by granting permission in the terminal and executing with `sudo`.
+
+
 ## Sources
 
 Engine — [odin4 by Adrilaw](https://github.com/Adrilaw/OdinV4)
