@@ -19,6 +19,6 @@ Engine — [odin4 by Adrilaw](https://github.com/Adrilaw/OdinV4)
 Interface — by me
 
 
-## Licença
+## License
 
 This project is licensed under the MIT License
