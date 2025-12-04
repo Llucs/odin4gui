@@ -23,6 +23,10 @@ First, go to the Releases tab and download the latest executable "odin4gui" and 
 
 Another way to run it is by granting permission in the terminal and executing with `sudo`.
 
+## Images
+
+![Print](images/image.png)
+
 
 ## Notice
 
