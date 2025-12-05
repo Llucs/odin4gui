@@ -6,6 +6,7 @@ Native Linux GUI for the odin4 Samsung flashing tool
 ![Engine](https://img.shields.io/badge/Engine-odin4-orange)
 ![GUI](https://img.shields.io/badge/GUI-PySide6-41CD52)
 ![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)
+[![Downloads totais](https://img.shields.io/github/downloads/Llucs/odin4gui/total.svg)]()
 
 ## How does it work?
 
