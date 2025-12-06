@@ -31,6 +31,11 @@ Another way to run it is by granting permission in the terminal and executing wi
 
 *The images in the test branch represent the version that is in the test branch. If the image is different from the main branch, then the image above is from a pre-release.*
 
+## Vídeo
+
+![Video](imagens/vídeo.webm)
+
+
 ## Notice
 
 > [!CAUTION]
