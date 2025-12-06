@@ -33,7 +33,10 @@ Another way to run it is by granting permission in the terminal and executing wi
 
 ## Vídeo
 
-![Video](imagens/vídeo.webm)
+<video width="320" height="240" controls>
+  <source src="imagens/vídeo.webm" type="video/webm">
+  Seu navegador não suporta o vídeo.
+</video>
 
 
 ## Notice
