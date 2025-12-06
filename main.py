@@ -1,12 +1,24 @@
 # main.py
 import sys
+import os
 from PySide6.QtWidgets import QApplication, QMessageBox
 from gui_ui import OdinMainWindow
 from flash_thread import FlashThread
 from device_scanner import DeviceScannerThread
 from parser import format_log
 from runner import build_flash_command
-import os
+
+# --- FUNÇÃO ESSENCIAL PARA O PYINSTALLER ---
+def resource_path(relative_path):
+    """ Obtém o caminho absoluto para recursos, funcione em dev e no PyInstaller """
+    try:
+        # PyInstaller cria uma pasta temporária em _MEIPASS
+        base_path = sys._MEIPASS
+    except Exception:
+        base_path = os.path.abspath(".")
+
+    return os.path.join(base_path, relative_path)
+# -------------------------------------------
 
 class MainApp(OdinMainWindow):
     def __init__(self):
@@ -29,6 +41,8 @@ class MainApp(OdinMainWindow):
         self.device_combo.addItem("Buscando...")
         self.device_combo.setEnabled(False)
 
+        # ATENÇÃO: Se o DeviceScannerThread chama o executável odin4,
+        # ele também precisa saber o caminho correto (veja nota abaixo do código).
         self.scanner_thread = DeviceScannerThread()
         self.scanner_thread.device_list_found.connect(self.update_device_list)
         self.scanner_thread.start()
@@ -36,14 +50,15 @@ class MainApp(OdinMainWindow):
     def update_device_list(self, devices: list):
         """Atualiza o ComboBox com a lista de dispositivos encontrados."""
         self.device_combo.clear()
-        if devices and not devices[0].startswith("ERRO"):
+        # Verificação de segurança para evitar crash se devices for None
+        if devices and len(devices) > 0 and not devices[0].startswith("ERRO"):
             self.device_combo.addItems(devices)
             self.device_combo.setEnabled(True)
             self.status_label.setText(f"Status: {len(devices)} dispositivo(s) detectado(s).")
         else:
             self.device_combo.addItem("Nenhum dispositivo encontrado ou erro.")
             self.device_combo.setEnabled(False)
-            self.status_label.setText("Status: Erro na detecção. Certifique-se de que o odin4 está configurado (udev rules).")
+            self.status_label.setText("Status: Erro na detecção ou nenhum dispositivo.")
 
     def start_flash(self):
         """Inicia o processo de flash na thread."""
@@ -55,7 +70,7 @@ class MainApp(OdinMainWindow):
             'nand_erase': self.nand_erase_checkbox.isChecked(),
             'home_validation': self.home_validation_checkbox.isChecked(),
             'reboot': self.reboot_checkbox.isChecked(),
-            'device_path': self.device_combo.currentText() if self.device_combo.isEnabled() and self.device_combo.currentText() != "Nenhum dispositivo encontrado ou erro." else None,
+            'device_path': self.device_combo.currentText() if self.device_combo.isEnabled() and "Nenhum" not in self.device_combo.currentText() else None,
         }
 
         if not firmware_set:
@@ -83,10 +98,8 @@ class MainApp(OdinMainWindow):
         try:
             log_line = format_log(parsed_data)
         except Exception:
-            # fallback simples
             log_line = parsed_data.get("text", str(parsed_data))
         self.log_text.append(log_line)
-        # Se você tiver uma barra de progresso, atualize-a aqui usando parsed_data.get('percentage')
 
     def flash_finished(self, status: str):
         """Processa o resultado final do flash."""
@@ -98,21 +111,23 @@ class MainApp(OdinMainWindow):
             self.status_label.setText(f"Status: FALHA NO FLASH! ❌ ({status})")
             QMessageBox.critical(self, "Falha", "Ocorreu um erro durante o processo de flash. Verifique os logs.")
 
-        # Reinicia a busca de dispositivos para o estado normal
         self.scan_devices()
 
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
 
-    # Carregar tema se existir
-    qss_path = os.path.join("assets", "styles.qss")
+    # --- CORREÇÃO AQUI: Usar resource_path para o estilo ---
+    qss_path = resource_path(os.path.join("assets", "styles.qss"))
+    
     if os.path.exists(qss_path):
         try:
             with open(qss_path, "r", encoding="utf-8") as f:
                 app.setStyleSheet(f.read())
-        except Exception:
-            pass
+        except Exception as e:
+            print(f"Erro ao carregar estilo: {e}")
+    else:
+        print(f"Arquivo de estilo não encontrado em: {qss_path}")
 
     window = MainApp()
     window.show()
